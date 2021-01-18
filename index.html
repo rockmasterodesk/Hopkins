@@ -1,0 +1,40 @@
+<audio src="A B - A.wav">
+<p>If you are reading this, it is because your browser does not support the audio element.</p>
+</audio>
+
+<button onclick="start();"> Start </button>
+
+<script>
+
+	var notes = "ABCDEFG";
+	var current = 1;
+	var max = 10;
+	
+	var audio = document.querySelector('audio');
+
+	var random_number = Math.round(Math.random() * notes.length-1);
+	var nowPlaying = 'A B - ' + notes[random_number] + '.wav';
+	
+	audio.src=nowPlaying;
+	console.log("Playing", random_number, nowPlaying);
+	//audio.play();
+
+	audio.onended = function() {
+		if(current <= max){
+			random_number = Math.round(Math.random() * notes.length-1);
+			var nowPlaying = 'A B - ' + notes[random_number] + '.wav';
+	
+			audio.src=nowPlaying;
+			console.log("Playing", random_number, nowPlaying);
+			audio.play();
+			current++;
+		} else {
+			alert("Practice Finished");
+		}
+	};
+	
+	function start(){
+		audio.play();
+	}
+
+</script>
