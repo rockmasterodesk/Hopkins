@@ -37,8 +37,8 @@
 <style type="text/css">
 	.hopkins-note-announcer {
 		width:100%;
-		max-width:400px;
-		min-height:400px;
+		max-width:600px;
+		height:300px;
 		background:#282923;
 		/*background-image:url('assets/images/background-concert.jpg');*/
 		background-size:cover;
@@ -71,6 +71,8 @@
 	.hn-outline .header {
 	    display: flex;
 		justify-content: flex-end;
+		height:40px;
+		flex-shrink:0;
 	}
 	.hn-outline .header #speed {
 		padding: 5px 15px;
@@ -91,6 +93,9 @@
 		display:flex;
 		justify-content: center;
 		flex-grow:1;
+		/*overflow:hidden;*/
+		height:150px;
+		flex-shrink:0;
 	}
 
 	.hn-outline .body #announce {
@@ -98,6 +103,9 @@
 		color:white;
 		font-weight:600;
 		text-shadow:0 0 5px black;
+		margin-top:0;
+		position:relative;
+		bottom:20px;
 	}
 
 	/*.hn-outline .body #countdown {
@@ -111,6 +119,8 @@
 		margin-bottom:10px;
 		display:flex;
 		justify-content: center;
+		height:100px;
+		flex-shrink:0;
 	}
 	.hn-outline .footer .play-pause-button {
 		background: transparent;
@@ -130,7 +140,7 @@
 		width: 150px;
 	    height: 150px;
 	    position: relative;
-	    bottom: 100px;
+	    bottom: 125px;
 	}
 	.hn-outline .footer .play-pause-button:hover {
 		box-shadow: 0 0 15px white;
@@ -144,23 +154,11 @@
 	  0%   {transform: scale(1);display:block;}
 	  /*25%  {transform: scale(1.2);}
 	  50%  {transform: scale(1.5);}*/
-	  100% {transform: scale(2.0);display:none;}
+	  100% {transform: scale(1.5);display:none;}
 	}
 	.announce {
 		animation-name: announce;
 		animation-duration: 0.4s;
-	}
-
-	/* countdown Animatin */
-	@keyframes countdown {
-	  0%   {transform: scale(1);display:block;}
-	  /*25%  {transform: scale(1.2);}
-	  50%  {transform: scale(1.5);}*/
-	  100% {transform: scale(2.5);display:none;}
-	}
-	.countdown {
-		animation-name: countdown;
-		animation-duration: 0.3s;
 	}
 </style>
 
