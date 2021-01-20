@@ -11,9 +11,9 @@
 			<h1 id="announce">
 				
 			</h1>
-			<h4 id="countdown">
+			<!-- <h4 id="countdown" style="display:none;">
 				
-			</h4>
+			</h4> -->
 		</div>
 		<div class="footer">
 			<button class="play-pause-button paused" aria-live="assertive" tabindex="32" aria-label="Pause">
@@ -37,15 +37,15 @@
 <style type="text/css">
 	.hopkins-note-announcer {
 		width:100%;
-		max-width:500px;
+		max-width:400px;
 		min-height:400px;
-		background:#ccc;
-		background-image:url('assets/images/background-concert.jpg');
+		background:#282923;
+		/*background-image:url('assets/images/background-concert.jpg');*/
 		background-size:cover;
 		margin:auto;
 		/*padding-top:10px;*/
 		border-radius:5px;
-		box-shadow:0 0 10px #aaa;
+		box-shadow:0 0 10px #111;
 		position:relative;
 	}
 
@@ -90,6 +90,7 @@
 	.hn-outline .body {
 		display:flex;
 		justify-content: center;
+		flex-grow:1;
 	}
 
 	.hn-outline .body #announce {
@@ -99,12 +100,12 @@
 		text-shadow:0 0 5px black;
 	}
 
-	.hn-outline .body #countdown {
+	/*.hn-outline .body #countdown {
 		font-size:2em;
 		color:white;
 		font-weight:600;
 		text-shadow:0 0 5px black;
-	}
+	}*/
 
 	.hn-outline .footer {
 		margin-bottom:10px;
@@ -143,7 +144,7 @@
 	  0%   {transform: scale(1);display:block;}
 	  /*25%  {transform: scale(1.2);}
 	  50%  {transform: scale(1.5);}*/
-	  100% {transform: scale(2.5);display:none;}
+	  100% {transform: scale(2.0);display:none;}
 	}
 	.announce {
 		animation-name: announce;
@@ -178,7 +179,7 @@
 	var nowPlaying = null;
 	var audioFilePadding = 500; // miliseconds
 	var justStarted = false;
-	var countdownTimer = null;
+	// var countdownTimer = null;
 	var announceTimer = null;
 	var playTimer = null;
 
@@ -210,7 +211,8 @@
 	audio.onended = function() {
 		var actualGapBetween; // Because the audio files already have few ms of padding with voice
 		if(isPlaying){
-			random_number = Math.round(Math.random() * (filesCount-1));
+			random_number = Math.round(Math.random() * 100);
+			random_number = random_number % filesCount;
 			playingKey = filesArray[random_number];
 			nowPlaying = filePath + playingKey + extension;
 
@@ -219,8 +221,8 @@
 				actualGapBetween = 100;
 				justStarted = false;
 			} else {
-				clearTimeout(countdownTimer);
-				countdown(actualGapBetween);
+				// clearTimeout(countdownTimer);
+				// countdown(actualGapBetween);
 			}
 
 			console.log("Gap for", actualGapBetween, "ms");
@@ -232,7 +234,7 @@
 
 				audio.src=nowPlaying;
 				console.log("Playing", random_number, nowPlaying);
-				clearTimeout(countdownTimer);
+				// clearTimeout(countdownTimer);
 				announceText(playingKey);
 				audio.play();
 			}, actualGapBetween);
@@ -245,53 +247,55 @@
 	};
 
 	function announceText(word){
-		document.querySelector('#countdown').innerText = '';
+		// document.querySelector('#countdown').innerText = '';
 		clearTimeout(announceTimer);
 		announceTimer = setTimeout(function(){ // Wait for few ms, then announce the text
-			var $announce = document.querySelector('#announce');
-			$announce.classList.remove('announce');
-			$announce.innerText = word;
-			$announce.classList.add('announce');
+			var AAannounce = document.querySelector('#announce');
+			AAannounce.classList.remove('announce');
+			AAannounce.innerText = word;
+			AAannounce.style.display='initial';
+			AAannounce.classList.add('announce');
 			setTimeout(function(){ // close after few seconds
-				$announce.classList.remove('announce');
-				$announce.innerText = '';
+				AAannounce.classList.remove('announce');
+				AAannounce.innerText = '';
+				AAannounce.style.display='none';
 			}, 400);
 		}, 200);
 	}
 
-	function countdown(milisecs){
-		var $countdown = document.querySelector('#countdown');
-		$countdown.classList.remove('countdown');
-		$countdown.style.display = 'none';
-		var newCount = parseInt($countdown.innerText) - 1;
+	// function countdown(milisecs){
+	// 	var AAcountdown = document.querySelector('#countdown');
+	// 	AAcountdown.classList.remove('countdown');
+	// 	AAcountdown.style.display = 'none';
+	// 	var newCount = parseInt(AAcountdown.innerText) - 1;
 
-		if (undefined !== milisecs){
-			newCount = milisecs / 1000;
-		}
+	// 	if (undefined !== milisecs){
+	// 		newCount = milisecs / 1000;
+	// 	}
 
-		if (newCount > 0){ // when it ends
-			$countdown.innerText = newCount;
-			$countdown.style.display = 'initial';
-			$countdown.classList.add('countdown');
-		}
+	// 	if (newCount > 0){ // when it ends
+	// 		AAcountdown.innerText = newCount;
+	// 		AAcountdown.style.display = 'initial';
+	// 		AAcountdown.classList.add('countdown');
+	// 	}
 
-		setTimeout(function(){ // close after few seconds
-			$countdown.style.display = 'none';
-		}, 300);
+	// 	setTimeout(function(){ // close after few seconds
+	// 		AAcountdown.style.display = 'none';
+	// 	}, 300);
 
-		countdownTimer = setTimeout(function(){ // close after few seconds
-			countdown();
-		}, 1000);
-	}
+	// 	countdownTimer = setTimeout(function(){ // close after few seconds
+	// 		countdown();
+	// 	}, 1000);
+	// }
 
 	function getGapBetween(){
 		return document.querySelector('#speed').value;
 	}
 
 	function speedChanged(){
-		clearTimeout(countdownTimer);
+		// clearTimeout(countdownTimer);
 		clearTimeout(announceTimer);
-		document.querySelector('#countdown').innerText = '';
+		// document.querySelector('#countdown').innerText = '';
 		document.querySelector('#announce').innerText = '';
 		gapBetween = parseInt(getGapBetween()) * 1000;
 		isPlaying = false;
@@ -303,16 +307,16 @@
 		isPlaying = !isPlaying;
 		justStarted = true;
 
-		$animation.setAttribute("from", isPlaying ? pause : play);
-		$animation.setAttribute("to", isPlaying ? play : pause);
-		$animation.beginElement();
-		clearTimeout(playTimer);
+		AAanimation.setAttribute("from", isPlaying ? pause : play);
+		AAanimation.setAttribute("to", isPlaying ? play : pause);
+		AAanimation.beginElement();
+		// clearTimeout(playTimer);
 
 		if (isPlaying){ // playing means -> the button says "||" or "Pause"
 			audio.onended(); // This function plays the audio
 			document.querySelector(".play-pause-button").classList.remove('paused');
 		} else {
-			clearTimeout(countdownTimer);
+			// clearTimeout(countdownTimer);
 			audio.pause();
 			document.querySelector(".play-pause-button").classList.add('paused');
 		}
@@ -324,7 +328,7 @@
 	var isPlaying = false,
 		pause = "M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28",
 		play = "M11,10 L17,10 17,26 11,26 M20,10 L26,10 26,26 20,26",
-		$animation = document.querySelector('#animation');
+		AAanimation = document.querySelector('#animation');
 
 	// What happens when user clicks the Play button
 	document.querySelector(".play-pause-button").addEventListener('click', playPauseButtonClicked);
