@@ -1,40 +1,331 @@
-<audio src="A B - A.wav">
+<div class="hopkins-note-announcer">
+	<div class="hn-outline">
+		<div class="header">
+			<select id="speed" onchange="speedChanged();">
+				<option value="5">Slow</option>
+				<option value="3">Medium</option>
+				<option value="1">Fast</option>
+			</select>
+		</div>
+		<div class="body">
+			<h1 id="announce">
+				
+			</h1>
+			<h4 id="countdown">
+				
+			</h4>
+		</div>
+		<div class="footer">
+			<button class="play-pause-button paused" aria-live="assertive" tabindex="32" aria-label="Pause">
+			   	<svg width="50" height="50" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+					<defs>
+						<path id="ytp-12" d="M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28">
+							<animate id="animation" begin="indefinite" attributeType="XML" attributeName="d" fill="freeze" to="M11,10 L17,10 17,26 11,26 M20,10 L26,10 26,26 20,26" from="M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28" dur="0.1s" keySplines=".4 0 1 1" repeatCount="1"></animate>
+						</path>
+					</defs>
+					<use xlink:href="#ytp-12" class="ytp-svg-shadow"></use>
+					<use xlink:href="#ytp-12" class="ytp-svg-fill"></use>
+			   	</svg>
+			</button>
+		</div>
+	</div>
+</div>
+<audio src="" id="player">
 <p>If you are reading this, it is because your browser does not support the audio element.</p>
 </audio>
 
-<button onclick="start();"> Start </button>
+<style type="text/css">
+	.hopkins-note-announcer {
+		width:100%;
+		max-width:500px;
+		min-height:400px;
+		background:#ccc;
+		background-image:url('assets/images/background-concert.jpg');
+		background-size:cover;
+		margin:auto;
+		/*padding-top:10px;*/
+		border-radius:5px;
+		box-shadow:0 0 10px #aaa;
+		position:relative;
+	}
+
+	.hn-outline {
+		position:absolute;
+		top:10px;
+		left:10px;
+		right:10px;
+		bottom:10px;
+		/*width: calc(100% - 20px);
+	    height: calc(100% - 20px);*/
+	    margin: auto;
+	    background: rgba(0,0,0,0.2); 
+	    -webkit-backdrop-filter: blur(10px);
+	    backdrop-filter: blur(5px);
+	    border-radius:5px;
+	    display:flex;
+	    flex-direction: column;
+	    justify-content: space-between;
+	    color:white;
+	}
+
+	.hn-outline .header {
+	    display: flex;
+		justify-content: flex-end;
+	}
+	.hn-outline .header #speed {
+		padding: 5px 15px;
+	    margin: 5px;
+	    background: transparent;
+	    color: white;
+	    font-weight: 500;
+	    font-size: 16px;
+	    cursor:pointer;
+	}
+	.hn-outline .header #speed > option {
+	    color: black;
+	    font-weight: 300;
+	    font-size: 14px;
+	}
+
+	.hn-outline .body {
+		display:flex;
+		justify-content: center;
+	}
+
+	.hn-outline .body #announce {
+		font-size:6em;
+		color:white;
+		font-weight:600;
+		text-shadow:0 0 5px black;
+	}
+
+	.hn-outline .body #countdown {
+		font-size:2em;
+		color:white;
+		font-weight:600;
+		text-shadow:0 0 5px black;
+	}
+
+	.hn-outline .footer {
+		margin-bottom:10px;
+		display:flex;
+		justify-content: center;
+	}
+	.hn-outline .footer .play-pause-button {
+		background: transparent;
+    	border-width: 0;
+    	fill:#FFF;
+    	width:70px;
+    	height:70px;
+    	background:rgba(0,0,0,0.5);
+    	display:flex;
+    	align-items: center;
+    	justify-content: center;
+    	border-radius:50%;
+    	cursor:pointer;
+		box-shadow: 0 0 5px white;
+	}
+	.hn-outline .footer .play-pause-button.paused {
+		width: 150px;
+	    height: 150px;
+	    position: relative;
+	    bottom: 100px;
+	}
+	.hn-outline .footer .play-pause-button:hover {
+		box-shadow: 0 0 15px white;
+	}
+	.hn-outline .footer .play-pause-button:focus {
+		outline:none;
+	}
+
+	/* Announce Animatin */
+	@keyframes announce {
+	  0%   {transform: scale(1);display:block;}
+	  /*25%  {transform: scale(1.2);}
+	  50%  {transform: scale(1.5);}*/
+	  100% {transform: scale(2.5);display:none;}
+	}
+	.announce {
+		animation-name: announce;
+		animation-duration: 0.4s;
+	}
+
+	/* countdown Animatin */
+	@keyframes countdown {
+	  0%   {transform: scale(1);display:block;}
+	  /*25%  {transform: scale(1.2);}
+	  50%  {transform: scale(1.5);}*/
+	  100% {transform: scale(2.5);display:none;}
+	}
+	.countdown {
+		animation-name: countdown;
+		animation-duration: 0.3s;
+	}
+</style>
+
+
 
 <script>
-
-	var notes = "ABCDEFG";
-	var current = 1;
-	var max = 10;
-	
+	// Required static variables and data
+	var filePath = "wavs/ABCDEFG/"; // The directory to search the files
+	var files = "A,B,C,D,E,F,G"; // A.wav, B.wav, C.wav,... G.wav
+	var extension = ".wav";
+	// var n= 1;
+	// var max = 10;
 	var audio = document.querySelector('audio');
+	var loadedCount = 0;
+	var playingKey = null;
+	var nowPlaying = null;
+	var audioFilePadding = 500; // miliseconds
+	var justStarted = false;
+	var countdownTimer = null;
+	var announceTimer = null;
+	var playTimer = null;
 
-	var random_number = Math.round(Math.random() * notes.length-1);
-	var nowPlaying = 'A B - ' + notes[random_number] + '.wav';
+	// Computed properties
+	var filesArray = files.split(',');
+	var filesCount = filesArray.length;
+	var gapBetween = parseInt(getGapBetween()) * 1000;
 	
-	audio.src=nowPlaying;
-	console.log("Playing", random_number, nowPlaying);
-	//audio.play();
+
+	// Prefetch a single audio
+	function preloadAudio(url) {
+	    var audio = new Audio();
+	    // once this file loads, it will call loadedAudio()
+	    // the file will be kept by the browser as cache
+	    audio.addEventListener('canplaythrough', function(){
+	    	if (++loadedCount === filesCount){
+	    		console.log("All files loaded");
+	    	}
+	    }, false);
+	    audio.src = url;
+	}
+
+	// Prefetch all the audio files
+	for (var i in filesArray) {
+	    // console.log(filePath + filesArray[i] + extension);
+	    preloadAudio(filePath + filesArray[i] + extension);
+	}
 
 	audio.onended = function() {
-		if(current <= max){
-			random_number = Math.round(Math.random() * notes.length-1);
-			var nowPlaying = 'A B - ' + notes[random_number] + '.wav';
+		var actualGapBetween; // Because the audio files already have few ms of padding with voice
+		if(isPlaying){
+			random_number = Math.round(Math.random() * (filesCount-1));
+			playingKey = filesArray[random_number];
+			nowPlaying = filePath + playingKey + extension;
+
+			actualGapBetween = gapBetween - audioFilePadding*2; // gives a 4 second gap if audio file already have 200ms of air paddings and the actual voice plays for only 600ms
+			if (justStarted){
+				actualGapBetween = 100;
+				justStarted = false;
+			} else {
+				clearTimeout(countdownTimer);
+				countdown(actualGapBetween);
+			}
+
+			console.log("Gap for", actualGapBetween, "ms");
+
+			playTimer = setTimeout(function(){ // play the next note after 
+				if (!isPlaying){ // Pause button pressed before next audio time
+					return;
+				}
+
+				audio.src=nowPlaying;
+				console.log("Playing", random_number, nowPlaying);
+				clearTimeout(countdownTimer);
+				announceText(playingKey);
+				audio.play();
+			}, actualGapBetween);
 	
-			audio.src=nowPlaying;
-			console.log("Playing", random_number, nowPlaying);
-			audio.play();
-			current++;
+			
+			// current++;
 		} else {
 			alert("Practice Finished");
 		}
 	};
-	
-	function start(){
-		audio.play();
+
+	function announceText(word){
+		document.querySelector('#countdown').innerText = '';
+		clearTimeout(announceTimer);
+		announceTimer = setTimeout(function(){ // Wait for few ms, then announce the text
+			var $announce = document.querySelector('#announce');
+			$announce.classList.remove('announce');
+			$announce.innerText = word;
+			$announce.classList.add('announce');
+			setTimeout(function(){ // close after few seconds
+				$announce.classList.remove('announce');
+				$announce.innerText = '';
+			}, 400);
+		}, 200);
 	}
 
+	function countdown(milisecs){
+		var $countdown = document.querySelector('#countdown');
+		$countdown.classList.remove('countdown');
+		$countdown.style.display = 'none';
+		var newCount = parseInt($countdown.innerText) - 1;
+
+		if (undefined !== milisecs){
+			newCount = milisecs / 1000;
+		}
+
+		if (newCount > 0){ // when it ends
+			$countdown.innerText = newCount;
+			$countdown.style.display = 'initial';
+			$countdown.classList.add('countdown');
+		}
+
+		setTimeout(function(){ // close after few seconds
+			$countdown.style.display = 'none';
+		}, 300);
+
+		countdownTimer = setTimeout(function(){ // close after few seconds
+			countdown();
+		}, 1000);
+	}
+
+	function getGapBetween(){
+		return document.querySelector('#speed').value;
+	}
+
+	function speedChanged(){
+		clearTimeout(countdownTimer);
+		clearTimeout(announceTimer);
+		document.querySelector('#countdown').innerText = '';
+		document.querySelector('#announce').innerText = '';
+		gapBetween = parseInt(getGapBetween()) * 1000;
+		isPlaying = false;
+		audio.pause();
+		playPauseButtonClicked();
+	}
+
+	function playPauseButtonClicked(){
+		isPlaying = !isPlaying;
+		justStarted = true;
+
+		$animation.setAttribute("from", isPlaying ? pause : play);
+		$animation.setAttribute("to", isPlaying ? play : pause);
+		$animation.beginElement();
+		clearTimeout(playTimer);
+
+		if (isPlaying){ // playing means -> the button says "||" or "Pause"
+			audio.onended(); // This function plays the audio
+			document.querySelector(".play-pause-button").classList.remove('paused');
+		} else {
+			clearTimeout(countdownTimer);
+			audio.pause();
+			document.querySelector(".play-pause-button").classList.add('paused');
+		}
+	}
+
+
+
+	// Pause, Play button related data
+	var isPlaying = false,
+		pause = "M11,10 L18,13.74 18,22.28 11,26 M18,13.74 L26,18 26,18 18,22.28",
+		play = "M11,10 L17,10 17,26 11,26 M20,10 L26,10 26,26 20,26",
+		$animation = document.querySelector('#animation');
+
+	// What happens when user clicks the Play button
+	document.querySelector(".play-pause-button").addEventListener('click', playPauseButtonClicked);
 </script>
